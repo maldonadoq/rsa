@@ -16,7 +16,7 @@
 #include "../func/criba.cpp"
 
 static string alfa = "0123456789,abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ-.";
-static int t_criba = 25;
+static int t_criba = 30;
 static vector<unsigned> criba = criba_(t_criba);
 
 using namespace std;
@@ -57,8 +57,6 @@ public:
 	~cesar(){	}
 };
 
-
-
 class rsa{
 private:
 	ZZ p, q ,c_pr, dh_kpr, dh_both;
@@ -69,7 +67,7 @@ private:
 public:
 	int k = 1000;
 	stack<ZZ> mat;
-	double time;
+	double time_al, time_ope, time_pr;
 	ZZ c_pu, N, dh_kpu, dh_p, dh_g;
 	rsa(long int);
 	ZZ resto_chino_rsa(ZZ);
@@ -84,6 +82,9 @@ public:
 
 rsa::rsa(long int t){
 	mat = camera();
+
+	struct timeval ti, tf;
+	gettimeofday(&ti, NULL);
 
 	unsigned i, j;
 	ZZ fl = ZZ(criba.size()-1) >> 1;
@@ -107,6 +108,9 @@ rsa::rsa(long int t){
 	this->sap = zz_to_bin(mat.top()); 	mat.pop();
 	this->saq = zz_to_bin(mat.top()); 	mat.pop();
 	this->sacp = zz_to_bin(mat.top()); 	mat.pop();
+
+	gettimeofday(&tf, NULL);
+	this->time_al = (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000;
 }
 
 bool rsa::miller(string nu, ZZ k, string *aw){
@@ -165,11 +169,12 @@ void rsa::test_primalidad(){
 	this->c_pu = bin_to_zz(scp);
 	gettimeofday(&tf, NULL);
 
-	this->time = (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000;
+	this->time_pr = (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000;
 	ZZ ps = (this->p-1)*(this->q-1);
 	this->c_pr = euc_ext(c_pu, ps);
 	this->N = this->p*this->q;
 
+	gettimeofday(&ti, NULL);
 	_p.push_back(p);
 	_p.push_back(q);
 
@@ -182,9 +187,11 @@ void rsa::test_primalidad(){
 	dpq.push_back(modulo(c_pr, p-1));
 	dpq.push_back(modulo(c_pr, q-1));
 
+	gettimeofday(&tf, NULL);
+	this->time_ope = (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000;
 }
 
-void rsa::cifrado(FILE *t_pla, ZZ c_pu, ZZ N){
+void rsa::cifrado(FILE *t_pl, ZZ c_pu, ZZ N){
 	vector<ZZ> v;
 	ZZ t_cif, c1 = ZZ(0);
 	string tb = to_string(alfa.size());
@@ -192,8 +199,11 @@ void rsa::cifrado(FILE *t_pla, ZZ c_pu, ZZ N){
 	ZZ bq2 = ZZ(zz_to_str(N).size() - 1);
 	ZZ bq3 = ZZ(zz_to_str(N).size());
 
-	this->first->cifra(t_pla);
-	FILE *t_pl = fopen("sws/t_ci_c.txt", "r");
+	/*this->first->cifra(t_pla);
+	FILE *t_pl = fopen("sws/t_ci_c.txt", "r");*/
+
+	struct timeval ti, tf;
+	gettimeofday(&ti, NULL);
 
 	string sms = "";
 	while((c=getc(t_pl))!=EOF){
@@ -235,6 +245,10 @@ void rsa::cifrado(FILE *t_pla, ZZ c_pu, ZZ N){
 		}
 	}
 	fclose(t_c);
+
+	gettimeofday(&tf, NULL);
+	double tim1 = (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000;
+	printf("time gen_aleatorio:  %.28f\n", tim1/1000);
 }
 
 ZZ rsa::resto_chino_rsa(ZZ w){
@@ -255,6 +269,8 @@ void rsa::descifrado(FILE *t_c){
 	ZZ temp = ZZ(0);
 	vector<ZZ> v;
 
+	struct timeval ti, tf;
+	gettimeofday(&ti, NULL);
 	char c;
 	string num = "";
 	while((c=getc(t_c))!=EOF){
@@ -280,21 +296,24 @@ void rsa::descifrado(FILE *t_c){
 	}
 
 	num = "";
-	FILE *t_dcs = fopen("sws/t_dc_c.txt", "w");
+	FILE *t_dc = fopen("sws/t_dc.txt", "w");
 	for(long int i=0; i<sms.size(); i++){
 		num += sms[i];
 		if(num.size() == bq1){
 			int b = atoi(num.c_str());
-			fprintf(t_dcs,"%c",alfa[b]);
+			fprintf(t_dc,"%c",alfa[b]);
 			num = "";
 		}
 	}
-	fclose(t_dcs);
-
-	t_dc = fopen("sws/t_dc.txt", "w");
-	this->first->descifra(t_dc);
 	fclose(t_dc);
 
+	/*t_dc = fopen("sws/t_dc.txt", "w");
+	this->first->descifra(t_dc);
+	fclose(t_dc);*/
+
+	gettimeofday(&tf, NULL);
+	double tim2 = (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000;
+	printf("time gen_aleatorio:  %.28f\n", tim2/1000);
 }
 
 int main(int argc, char const *argv[]){
@@ -331,7 +350,10 @@ int main(int argc, char const *argv[]){
 						case 2:
 							cout << "c_pu:  " << alice->c_pu << endl;
 							cout << "N:  " << alice->N << endl;
-							printf("time:  %.28f\n", alice->time/1000);
+							printf("time_al:  %.28f\n", alice->time_al);
+							printf("time_pr:  %.28f\n", alice->time_pr);
+							printf("time_ope:  %.28f\n", alice->time_ope);
+							printf("time_tot:  %.28f\n", alice->time_ope+alice->time_al+alice->time_pr);
 							cout << "mat_size:  " << alice->mat.size() << endl;
 							cout << "dh_p:  " << alice->dh_p << endl;
 							cout << "dh_g:  " << alice->dh_g << endl;
