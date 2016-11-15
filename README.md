@@ -1,10 +1,12 @@
 # rsa
 rsa algorithm
+Percy Maldonado Quispe UCSP-CS
 
 Pasos
 1) generacion de primos $p$ y $q$, con la criba se llega hasta 32 en un tiempo .... razonable?
-	30 bits: 50.2460000000000022168933355715
-	32 bits: 
+	30 bits: 50.2460000000000022168933355715 s
+	32 bits: 202.2290000000000134150468511507 s
+	
 luego, es que necesitamos numeros primos grandes de 1024 a mas bits, y eso la criba no lo hace, usamos la generacion de primos probabilisticos, ahora, yo estoy usando miller-rabin, con 1000 iteraciones para saber si es primo o no, con 1000 iteraciones es mas seguro si se podria decir.
 
 2) Se calcula:
