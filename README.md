@@ -4,17 +4,22 @@ Percy Maldonado Quispe UCSP-CS
 
 Pasos
 1) generacion de primos $p$ y $q$, con la criba se llega hasta 32 en un tiempo .... razonable?
+	
 	30 bits: 50.2460000000000022168933355715 s
+	
 	32 bits: 202.2290000000000134150468511507 s
 	
 luego, es que necesitamos numeros primos grandes de 1024 a mas bits, y eso la criba no lo hace, usamos la generacion de primos probabilisticos, ahora, yo estoy usando miller-rabin, con 1000 iteraciones para saber si es primo o no, con 1000 iteraciones es mas seguro si se podria decir.
 
 2) Se calcula:
 	$N = pq$ 
+
 3) Se calcula \phi de N
 	$\phi(N) = (p-1)(q-1)$ (la funcion phi de euler)
+
 4) Se escoge un entero positivo $e$, que pertenece a $\mathbb{Z}_{\phi(N)}$
 	e: es la clave publica
+
 5) Calcular $d = e^{-1} (mod \phi(N))$
 	$ed \equiv 1 (mod \phi(N))$
 	d: es la clave privada
@@ -49,13 +54,17 @@ en este archivo, estan el algoritmo, LSRG o como se escriba, lo que nos explico 
 w) _random(), esta funcion me devuelve un numero random segun la semilla que le pasemos, y el tamaño en bits de este numero random. dentro hay las funciones sum() y dez(), estas hacen:
 
 	sum(): hace el crecimiento de la semilla segun el estado en que este la semilla
+	
 	dez(): hace el desplazamiento de la semilla, la parte en bloques de dos, y hace un corrimiento a la derecha y otro a la izquierda, y suma con los randoms que sacamos con anterioridad para la suma (mod 2) y eso le ponemos en las casillas vacias por el corrimiento
 
 
 
 otra librerias creadas:
+
 	-) rsa_fun.cpp : Contiene las funciones para el cifrado, concatenar, convertir a string, etc
+	
 	-) func.cpp : Contiene las funciones para el calculo de la clave privada, como el algoritmo extendido de euclides, mcd(), modulo().
+	
 	-) criba.cpp : La criba de Eratostenes, no es de mi autoria, pero bueno, ahi esta, como le dije en clases, buscando, me encontre con esta, la criba segmentada. 
 
 /*	
