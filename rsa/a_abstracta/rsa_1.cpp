@@ -16,7 +16,7 @@
 #include "../func/criba.cpp"
 
 static string alfa = "0123456789,abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ-.";
-static int t_criba = 30;
+static int t_criba = 20;
 static vector<unsigned> criba = criba_(t_criba);
 
 using namespace std;
@@ -156,7 +156,10 @@ void rsa::test_primalidad(){
 
 	struct timeval ti, tf;
 	gettimeofday(&ti, NULL);
-	/*thread a(pthr, &sp, ZZ(k), &sap);
+	/*
+	el test para p, 1 y e al mismo tiempo - no funciona, no se por que :av
+	estas funciones estan comentadas en random.cpp
+	thread a(pthr, &sp, ZZ(k), &sap);
 	thread b(pthr, &sq, ZZ(k), &saq);
 	thread c(pthr, &scp, ZZ(k), &sacp);
 	a.join();	b.join();	c.join();*/
